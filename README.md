@@ -28,9 +28,11 @@ The framework is organized into several key files, each responsible for differen
 
 Clone the repository to your local machine:
 
+https://github.com/vtnguyen04/NeuRalnet-from-scratch.git
+
 ```bash
-git clone https://github.com/PathToRepository/NeuralNetworkFramework.git
-cd NeuralNetworkFramework
+git clone https://github.com/vtnguyen04/NeuRalnet-from-scratch.git
+cd NeuRalnet-from-scratch
 ```
 
 ## Usage
@@ -38,44 +40,80 @@ cd NeuralNetworkFramework
 Here is a simple example to demonstrate how to define a model, train, and evaluate it using the framework:
 
 ```python
-from Module import Linear, Activation
-from pl import LightningModule, Trainer
+import numpy as np
+from loss import CrossEntropy
 from Optimizers import Adam
-from loss import CrossEntropyLoss
+from activation import ReLU
+from Layers import Linear, Sequential, Dropout, BatchNormalization
+from Data_loader import DataLoader
+from sklearn.preprocessing import OneHotEncoder
+import matplotlib.pyplot as plt
+import pickle
+import os
+import matplotlib
+from autograd import AutogradContext
+matplotlib.use('Qt5Agg')
 
-class MyModel(LightningModule):
+from pl import LightningModule, Trainer
+from callbacks import ProgressLogger, ModelCheckpoint, EarlyStopping, LearningRateScheduler
+
+""" setup your data here """
+num_inputs, num_feature_inputs, num_feature_outputs = 10, 10, 10, 10
+
+X_train = np.random.rand(num_inputs, num_feature_inputs)
+y_train = np.random.rand(num_inputs, num_feature_outputs)
+
+X_val = np.random.rand(num_inputs, num_feature_inputs)
+y_val = np.random.rand(num_inputs, num_feature_outputs)
+
+train_loader = DataLoader(X_train, y_train, batch_size = 512, shuffle = True)
+val_loader = DataLoader(X_val, y_val, batch_size = 512, shuffle = True)
+
+class NN(LightningModule):
     def __init__(self):
         super().__init__()
-        self.layer1 = Linear(784, 128)
-        self.activation = Activation('relu')
-        self.layer2 = Linear(128, 10)
-        self.loss_fn = CrossEntropyLoss()
+        
+        self.model = Sequential(
+            Linear(num_feature_inputs, 256),
+            BatchNormalization(256),
+            ReLU(),
+            Dropout(0.5),
+            Linear(256, 128),
+            BatchNormalization(128),
+            ReLU(),
+            Dropout(0.3),
+            Linear(128, 64),
+            BatchNormalization(64),
+            GELU(),
+            Linear(64, num_feature_outputs)
+        )
+        self.loss_fn = CrossEntropy()
 
     def forward(self, x):
-        x = self.activation(self.layer1(x))
-        return self.layer2(x)
+        return self.model(x)
 
     def training_step(self, batch):
-        inputs, targets = batch
-        outputs = self(inputs)
-        loss = self.loss_fn(outputs, targets)
+        x, y = batch
+        y_pred = self(x)
+        loss = self.loss_fn(y_pred, y)
         return loss
 
-    def configure_optimizers():
-        return Adam(self.parameters())
+    def validation_step(self, batch):
+        x, y = batch
+        y_pred = self(x)
+        loss = self.loss_fn(y_pred, y)
+        accuracy = (y_pred.argmax(axis = 1) == y.argmax(axis = 1)).mean()
+        return loss, accuracy
+    
+    def configure_optimizers(self):
+        return Adam(self.parameters(), learning_rate = 0.0001)
 
+model.summary()
 # Example usage
-model = MyModel()
+model = NN()
+model.summary()
 trainer = Trainer(model)
 trainer.fit(train_loader, val_loader)
 ```
 
-## Contribution
 
-Contributions are welcome! If you'd like to improve the framework or add new features, please fork the repository and submit a pull request.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
-
-This README provides a comprehensive guide to getting started with the framework, from installation to defining and training models.
