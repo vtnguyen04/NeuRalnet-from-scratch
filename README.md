@@ -1,4 +1,4 @@
-# Neural Network Framework Inspired by PyTorch & PyTorch Lightning
+# Neural Network from scratch Inspired by PyTorch & PyTorch Lightning
 
 This repository contains the implementation of a neural network framework that mimics the behavior of PyTorch and PyTorch Lightning. Created by me (Võ Thành Nguyễn), this framework is designed to provide a user-friendly interface for building, training, and validating deep learning models, Help everyone gain a deeper understanding of the implementation of an artificial network from scratch.
 
