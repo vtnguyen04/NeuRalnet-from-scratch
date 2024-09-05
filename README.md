@@ -40,6 +40,11 @@ cd NeuRalnet-from-scratch
 Here is a simple example to demonstrate how to define a model, train, and evaluate it using the framework:
 
 ```python
+
+# Author: Vo Thanh Nguyen
+# Date Created: 2024-09-05
+# Description: This script demonstrates demonstrate how to define a model, train, and evaluate it using the framework:
+
 import numpy as np
 from loss import CrossEntropy
 from Optimizers import Adam
