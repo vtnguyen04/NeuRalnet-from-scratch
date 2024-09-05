@@ -63,7 +63,7 @@ from pl import LightningModule, Trainer
 from callbacks import ProgressLogger, ModelCheckpoint, EarlyStopping, LearningRateScheduler
 
 """ setup your data here """
-num_inputs, num_feature_inputs, num_feature_outputs = 10, 10, 10, 10
+num_inputs, num_feature_inputs, num_feature_outputs = 10, 10, 10
 
 X_train = np.random.rand(num_inputs, num_feature_inputs)
 y_train = np.random.rand(num_inputs, num_feature_outputs)
